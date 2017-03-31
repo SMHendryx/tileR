@@ -36,7 +36,7 @@ tileR <- function(las, catalogDimensions){
   # Saves each las tile as an las file to disk in current working directory
   
   #catalogDimenions should be 2D:
-  if(length(catalogDimensions !=2)){
+  if(length(catalogDimensions) != 2){
     stop("catalogDimenions must equal 2")
   }
   
@@ -52,21 +52,26 @@ tileR <- function(las, catalogDimensions){
 
 
   #numTiles = prod(catalogDimensions)
-  #compute column and row widths:
-  stepX = w/catalogDimensions[1]
-  stepY = h/catalogDimensions[2]
-
+  numRows = catalogDimensions[1]
+  numColumns = catalogDimensions[2] 
+  #compute column (stepX) and row widths:
+  stepY = h/numRows
+  stepX = w/numColumns
+  
   minY_i = minY
-  minX_i = minX_i
+  minX_i = minX
   tileNum = 1
-  for(i_column in seq(numTiles)){
+  
+  for(i_column in seq(numColumns)){
     #compute the borders of each column:
     maxX_i = minX_i + stepX
+    #make the column of points:
     col_i_points = LAS(las@data[X >= minX_i & X <= maxX_i])
-    for(i_row in seq(numTiles)){
+    #then from the column pull the row to make the tile:
+    for(i_row in seq(numRows)){
       maxY_i = minY_i + stepY
       tile_i_points = LAS(col_i_points@data[Y >= minY_i & Y <= maxY_i])
-      writeLAS(tile_i_points, paste0("tile-", tileNum))
+      writeLAS(tile_i_points, paste0("tile-", tileNum, ".las"))
       tileNum = tileNum + 1
     }
   }
