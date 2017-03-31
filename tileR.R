@@ -48,18 +48,15 @@ tileR <- function(las, catalogDimensions){
   #X extents:
   minX = min(las@data[,X])
   maxX = max(las@data[,X])
-
   
   #Compute width:
   w = maxX - minX
-
-
+  
   #numTiles = prod(catalogDimensions)
   numRows = catalogDimensions[1]
   numColumns = catalogDimensions[2] 
   #compute column (stepX) widths:
   stepX = w/numColumns
-
   
   #minY_i = minY
   minX_column = minX
