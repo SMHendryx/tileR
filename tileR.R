@@ -31,9 +31,10 @@ library(lidR)
 # though the underlying logic could be applied to any point cloud with 3 dimensions or more
 
 tileR <- function(las, catalogDimensions){
+  # Saves each las tile as an las file to disk in current working directory
   # :Param las: las file as lidR LAS object
   # :Param catalogDimensions: tuple of length 2 giving number of desired rows by number of desired columns, e.g.: (numRows, numColumns)
-  # Saves each las tile as an las file to disk in current working directory
+
   
   #catalogDimenions should be 2D:
   if(length(catalogDimensions) != 2){
@@ -44,14 +45,12 @@ tileR <- function(las, catalogDimensions){
   # see: https://github.com/Jean-Romain/lidR/issues/54
   oheader <- las@header
 
-  #extent:
+  #X extents:
   minX = min(las@data[,X])
   maxX = max(las@data[,X])
-  #minY = min(las@data[,Y])
-  #maxY = max(las@data[,Y])
+
   
-  #Compute height and width:
-  #h = maxY - minY
+  #Compute width:
   w = maxX - minX
 
 
@@ -60,8 +59,7 @@ tileR <- function(las, catalogDimensions){
   numColumns = catalogDimensions[2] 
   #compute column (stepX) widths:
   stepX = w/numColumns
-  #moved this inside for loop to make division of the column into more equally sized tiles:
-  #stepY = h/numRows
+
   
   #minY_i = minY
   minX_column = minX
@@ -86,15 +84,17 @@ tileR <- function(las, catalogDimensions){
     stepY = h/numRows
     #then from the column pull the row to make the tile:
     for(i_row in seq(numRows)){
+      #Set Y bounds of tile:
       maxY_tile = minY_tile + stepY
 
       #Select the points that go into the tile:
       tile_i_points = LAS(col_i_points@data[Y >= minY_tile & Y <= maxY_tile], oheader)
       #plot(tile_i_points)
+      #write to disk:
       writeLAS(tile_i_points, paste0("tile-", tileNum, ".las"))
       #stop("should have written tile-1.las")
       
-      #increment minY_i
+      #increment minY_i:
       minY_tile = maxY_tile 
       tileNum = tileNum + 1
     }
